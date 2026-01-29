@@ -1,0 +1,13 @@
+language js(typescript,jsx)
+
+file(name = $filename, body = $program) where {
+  $filename <: "$app/.*\.ts",
+  $program <: contains bubble `import $_ from $source` as $import where {
+    $source <: includes "app",
+    register_diagnostic(
+      span = $import,
+      message = "Application level modules can't be accessed by lower level codebase.",
+      severity = "error"
+    )
+  }
+}
